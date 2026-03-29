@@ -4,6 +4,7 @@
   "description": "A basic tool to create a http client to make requests and receive responses that runs on Node.js",
   "main": "index.js",
   "type": "commonjs",
+  "types": "./index.d.ts",
   "exports": "./index.js",
   "repository": "https://github.com/MitchellCollins/node-http-client.git",
   "keywords": ["node", "http", "client", "http-client"],

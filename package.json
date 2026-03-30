@@ -6,6 +6,9 @@
   "type": "commonjs",
   "types": "./index.d.ts",
   "exports": "./index.js",
+  "scripts": {
+    "test": "node --test ./tests/*"
+  },
   "repository": "https://github.com/MitchellCollins/node-http-client.git",
   "keywords": ["node", "http", "client", "http-client"],
   "author": "Mitchell Collins",

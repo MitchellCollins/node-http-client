@@ -1,7 +1,7 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert");
 const { Readable } = require("node:stream");
-const { encodeConfigBody } = require("../lib/utils");
+const encodeConfigBody = require("../lib/utils/encodeConfigBody");
 
 describe("body encoder & headers configurer", () => {
     it("should be a function", () => {

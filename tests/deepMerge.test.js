@@ -1,6 +1,6 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert");
-const { deepMerge } = require("../lib/utils");
+const deepMerge = require("../lib/utils/deepMerge");
 
 describe("config merger", () => {
     it("should be a function", () => {

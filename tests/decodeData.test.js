@@ -1,6 +1,6 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert");
-const { decodeData } = require("../lib/utils");
+const decodeData = require("../lib/utils/decodeData");
 
 describe("data decoder", () => {
     it("should be a function", () => {

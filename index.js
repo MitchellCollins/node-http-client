@@ -1,3 +1,1 @@
-const HTTPClient = require("./lib/HTTPClient");
-
-module.exports = HTTPClient;
+exports = module.exports = require("./lib/nexis");

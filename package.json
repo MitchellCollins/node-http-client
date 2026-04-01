@@ -1,16 +1,16 @@
 {
-  "name": "@mitchell-collins/node-http-client",
+  "name": "@mitchell-collins/nexis",
   "version": "0.1.0",
-  "description": "A basic tool to create a http client to make requests and receive responses that runs on Node.js",
+  "description": "A basic tool to create a http(s) client to make requests and receive responses that runs on Node.js",
   "main": "index.js",
   "type": "commonjs",
   "types": "./index.d.ts",
   "exports": "./index.js",
   "scripts": {
-    "test": "node --test ./tests/*"
+    "test": "node --test ./tests/*.test.js"
   },
   "repository": "https://github.com/MitchellCollins/node-http-client.git",
-  "keywords": ["node", "http", "client", "http-client"],
+  "keywords": ["nexis", "node", "http", "https", "client", "http-client", "https-client"],
   "author": "Mitchell Collins",
   "license": "ISC"
 }

@@ -36,6 +36,39 @@ describe("Nexis instance", () => {
         assert.deepStrictEqual(client.getConfig(), { ...defaults.config(), ...otherConfig });
     });
 
+    it("should validate request header", () => {
+        const invalidTokenErr = (err) => err instanceof TypeError && err.code === "ERR_INVALID_HTTP_TOKEN";
+        const invalidValueErr = (err) => err instanceof TypeError && err.code === "ERR_HTTP_INVALID_HEADER_VALUE";
+        
+        // Validate name during set
+        assert.throws(
+            () => client.setConfig({ headers: { "content type": "application/json" } }),
+            invalidTokenErr,
+            "should reject invalid header name on set"
+        );
+
+        // Validate value during set
+        assert.throws(
+            () => client.setConfig({ headers: { "content-type": undefined }}),
+            invalidValueErr,
+            "should reject invalid header value on set"
+        );
+
+        // Validate name during request
+        assert.rejects(
+            async () => await client.get("/", { headers: { "content type": "application/json" }}),
+            invalidTokenErr,
+            "should reject invalid header name on request"
+        );
+
+        // Validate value during request
+        assert.rejects(
+            async () => await client.get("/", { headers: { "content-type": undefined }}),
+            invalidValueErr,
+            "should reject invalid header value on request"
+        );
+    });
+
     it("should have request methods", () => {
         assert.strictEqual(typeof client.get, "function");
         assert.strictEqual(typeof client.delete, "function");

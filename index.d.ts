@@ -1,20 +1,75 @@
-import { IncomingMessage, RequestOptions } from "http";
-import { Stream } from "stream";
-
-export type HTTPBody = string | object | Stream | ArrayBuffer | Buffer<ArrayBufferLike> | ArrayBufferView<ArrayBufferLike> | URLSearchParams;
+import * as http from "node:http";
+import * as https from "node:https";
+import { Stream } from "node:stream";
 
 /**
- * A callback function to handle response and error.
+ * The protocol options that Nexis handles.
  */
-export type HTTPCallback = (res: IncomingMessage, err?: Error) => void;
+export type ProtocolOptions = "http" | "https";
 
 /**
- * Creates a `HTTPClient` that uses the `node:http` library to make http request and recieve responses.
- * Simplifys making requests by auto configurating and encoding data, and sets up default event handlers.
+ * The forms of data that `Nexis` handles.
+ */
+export type NexisBody = string | object | Stream | ArrayBuffer | Buffer<ArrayBufferLike> | ArrayBufferView<ArrayBufferLike> | URLSearchParams;
+
+/**
+ * A `Nexis` callback function to handle response and error.
+ */
+export type NexisCallback = (res: http.IncomingMessage, err?: Error) => void;
+
+/**
+ * Configuration options for a `Nexis` instance.
+ */
+export type NexisConfig = http.RequestOptions & { baseURL: string, protocol: ProtocolOptions }
+
+/**
+ * Defines the default values.
+ */
+export type defaults = {
+    baseURL: "",
+    config: () => ({ 
+        port: 80,
+        timeout: 10000,
+    }),
+    res: () => ({ data: null }),
+    protocol: "http"
+}
+export const defaults: defaults;
+
+/**
+ * Maps protocol option string to module.
+ */
+export type Protocols = { "http": typeof http, "https": typeof https };
+export const protocols: Protocols;
+
+/**
+ * Used to merge two objects together overriding `object1` properties with `object2`.
+ */
+export type deepMerge = (object1: object, object2: object) => object;
+export const deepMerge: deepMerge;
+
+/**
+ * Used to automatically encode data and configure content type and length.
+ */
+export type encodeConfigBody = (body: NexisBody) => [
+    string | Buffer<ArrayBuffer | ArrayBufferLike> | Stream | null, 
+    { "content-type": string | null, "content-length": number | null }
+];
+export const encodeConfigBody: encodeConfigBody;
+
+/**
+ * Used to decode response data based off the content type.
+ */
+export type decodeData = (data: string, contentType: string) => string | object | URLSearchParams;
+export const decodeData: decodeData;
+
+/**
+ * Creates a `Nexis` instance that uses the `node:http` & `node:https` libraries to make http(s) request and receive responses.
+ * Simplifys making requests by auto configurating, encoding and decoding data, and sets up default event handlers and values.
  * Additionally, provides many options to handle a response or error.
  * 
  * @example
- *      const client = new HTTPClient("localhost", { port: 3000 });
+ *      const client = new Nexis({ baseURL: "localhost", protocol: "http", port: 3000 });
  *      client.get("/greeting", (res, err) => {
  *          if (err) {
  *              console.error("Get Error:", err);
@@ -35,14 +90,14 @@ export type HTTPCallback = (res: IncomingMessage, err?: Error) => void;
  *      
  * @class
  */
-export default class HTTPClient {
+export class Nexis {
     /**
-     * Creates a `HTTPClient` that uses the `node:http` library to make http request and recieve responses.
-     * Simplifys making requests by auto configurating and encoding data, and sets up default event handlers.
+     * Creates a `Nexis` instance that uses the `node:http` & `node:https` libraries to make http(s) request and receive responses.
+     * Simplifys making requests by auto configurating, encoding and decoding data, and sets up default event handlers and values.
      * Additionally, provides many options to handle a response or error.
      * 
      * @example
-     *      const client = new HTTPClient("localhost", { port: 3000 });
+     *      const client = new Nexis({ baseURL: "localhost", protocol: "http", port: 3000 });
      *      client.get("/greeting", (res, err) => {
      *          if (err) {
      *              console.error("Get Error:", err);
@@ -63,35 +118,71 @@ export default class HTTPClient {
      *      
      * @class
      */
-    constructor(baseURL: string, config: RequestOptions);
+    constructor(config: NexisConfig);
 
     getBaseURL(): string;
-    getConfig(): RequestOptions;
+    getProtocol(): ProtocolOptions;
+    getConfig(): http.RequestOptions;
     setBaseURL(newBaseURL?: string): void;
-    setConfig(newConfig?: RequestOptions): void;
+    setProtocol(newProtocol?: ProtocolOptions): void;
+    setConfig(newConfig?: http.RequestOptions): void;
 
     /**
-     * Make a http get request.
+     * Make a http(s) get request.
      */
-    get(path: string, configOrCb?: RequestOptions | HTTPCallback, cb?: HTTPCallback): Promise<IncomingMessage>;
+    get(path: string, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     /**
-     * Make a http delete request.
+     * Make a http(s) delete request.
      */
-    delete(path: string, configOrCb?: RequestOptions | HTTPCallback, cb?: HTTPCallback): Promise<IncomingMessage>;
+    delete(path: string, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     /**
-     * Make a http post request.
+     * Make a http(s) post request.
      */
-    post(path: string, body: HTTPBody, configOrCb?: RequestOptions | HTTPCallback, cb?: HTTPCallback): Promise<IncomingMessage>;
+    post(path: string, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     /**
-     * Make a http put request.
+     * Make a http(s) put request.
      */
-    put(path: string, body: HTTPBody, configOrCb?: RequestOptions | HTTPCallback, cb?: HTTPCallback): Promise<IncomingMessage>;
+    put(path: string, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     /**
-     * Make a http patch request.
+     * Make a http(s) patch request.
      */
-    patch(path: string, body: HTTPBody, configOrCb?: RequestOptions | HTTPCallback, cb?: HTTPCallback): Promise<IncomingMessage>;
+    patch(path: string, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
+
+    Agent: http.Agent;
+    ClientRequest: http.ClientRequest;
+    IncomingMessage: http.IncomingMessage;
+    OutgoingMessage: http.OutgoingMessage;
+    METHODS: typeof http.METHODS;
+    STATUS_CODES: typeof http.STATUS_CODES;
+    globalAgent: typeof http.globalAgent;
+    maxHeaderSize: typeof http.maxHeaderSize;
+    request: typeof http.request;
+    validateHeaderName: typeof http.validateHeaderName;
+    validateHeaderValue: typeof http.validateHeaderValue;
 }
+
+/**
+ * An instance of `Nexis` that has the added factory functionality of a `create` method to make more `Nexis` instances.
+ */
+export interface NexisFactory extends Nexis {
+    /**
+     * Creates another `NexisFactory` instance, `instanceConfig` is merged with the `defaultConfig` of this instance.
+     */
+    create(instanceConfig: NexisConfig): NexisFactory;
+}
+/**
+ * A `NexisFactory` instance with default configuration.
+ */
+const nexis: NexisFactory & {
+    Nexis: Nexis;
+    defaults: defaults;
+    protocols: Protocols;
+    deepMerge: deepMerge;
+    encodeConfigBody: encodeConfigBody;
+    decodeData: decodeData;
+};
+export default nexis;

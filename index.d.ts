@@ -3,11 +3,6 @@ import * as https from "node:https";
 import { Stream } from "node:stream";
 
 /**
- * The protocol options that Nexis handles.
- */
-export type ProtocolOptions = "http" | "https";
-
-/**
  * The forms of data that `Nexis` handles.
  */
 export type NexisBody = string | object | Stream | ArrayBuffer | Buffer<ArrayBufferLike> | ArrayBufferView<ArrayBufferLike> | URLSearchParams;
@@ -20,26 +15,25 @@ export type NexisCallback = (res: http.IncomingMessage, err?: Error) => void;
 /**
  * Configuration options for a `Nexis` instance.
  */
-export type NexisConfig = http.RequestOptions & { baseURL: string, protocol: ProtocolOptions }
+export type NexisConfig = http.RequestOptions & { baseURL: string | URL }
 
 /**
  * Defines the default values.
  */
 export type defaults = {
-    baseURL: "",
+    baseURL: "http://localhost:80/",
     config: () => ({ 
         port: 80,
         timeout: 10000,
     }),
-    res: () => ({ data: null }),
-    protocol: "http"
+    res: () => ({ data: null })
 }
 export const defaults: defaults;
 
 /**
  * Maps protocol option string to module.
  */
-export type Protocols = { "http": typeof http, "https": typeof https };
+export type Protocols = { "http:": typeof http, "https:": typeof https };
 export const protocols: Protocols;
 
 /**
@@ -69,7 +63,7 @@ export const decodeData: decodeData;
  * Additionally, provides many options to handle a response or error.
  * 
  * @example
- *      const client = new Nexis({ baseURL: "localhost", protocol: "http", port: 3000 });
+ *      const client = new Nexis({ baseURL: "http://localhost:3000/" });
  *      client.get("/greeting", (res, err) => {
  *          if (err) {
  *              console.error("Get Error:", err);
@@ -97,7 +91,7 @@ export class Nexis {
      * Additionally, provides many options to handle a response or error.
      * 
      * @example
-     *      const client = new Nexis({ baseURL: "localhost", protocol: "http", port: 3000 });
+     *      const client = new Nexis({ baseURL: "http://localhost:3000/" });
      *      client.get("/greeting", (res, err) => {
      *          if (err) {
      *              console.error("Get Error:", err);
@@ -120,37 +114,35 @@ export class Nexis {
      */
     constructor(config: NexisConfig);
 
-    getBaseURL(): string;
-    getProtocol(): ProtocolOptions;
+    getBaseURL(): URL;
     getConfig(): http.RequestOptions;
-    setBaseURL(newBaseURL?: string): void;
-    setProtocol(newProtocol?: ProtocolOptions): void;
+    setBaseURL(newBaseURL?: string | URL): void;
     setConfig(newConfig?: http.RequestOptions): void;
 
     /**
      * Make a http(s) get request.
      */
-    get(path: string, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
+    get(path: string | URL, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     /**
      * Make a http(s) delete request.
      */
-    delete(path: string, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
+    delete(path: string | URL, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     /**
      * Make a http(s) post request.
      */
-    post(path: string, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
+    post(path: string | URL, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     /**
      * Make a http(s) put request.
      */
-    put(path: string, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
+    put(path: string | URL, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     /**
      * Make a http(s) patch request.
      */
-    patch(path: string, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
+    patch(path: string | URL, body: NexisBody, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
 
     Agent: http.Agent;
     ClientRequest: http.ClientRequest;

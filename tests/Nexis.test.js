@@ -12,34 +12,27 @@ describe("Nexis class", () => {
 });
 
 describe("Nexis instance", () => {
-    let baseURL = "test.com";
-    let protocol = "http";
+    let baseURL = "http://localhost:4000/";
     let otherConfig = { port: 3000 };
-    const client = new Nexis({ baseURL, protocol, ...otherConfig });
+    const client = new Nexis({ baseURL, ...otherConfig });
 
     it("should have getter & setter methods", () => {
         assert.strictEqual(typeof client.getBaseURL, "function");
-        assert.strictEqual(typeof client.getProtocol, "function");
         assert.strictEqual(typeof client.getConfig, "function");
         assert.strictEqual(typeof client.setBaseURL, "function");
-        assert.strictEqual(typeof client.setProtocol, "function");
         assert.strictEqual(typeof client.setConfig, "function");
     });
 
     it("should have private attributes", () => {
-        assert.strictEqual(client.getBaseURL(), baseURL);
-        assert.strictEqual(client.getProtocol(), protocol);
+        assert.deepStrictEqual(client.getBaseURL(), new URL(baseURL));
         assert.deepStrictEqual(client.getConfig(), { ...defaults.config(), ...otherConfig });
 
-        baseURL = "localhost";
-        protocol = "https";
+        baseURL = new URL("https://localhost:3000/");
         otherConfig = { port: 4000 };
         client.setBaseURL(baseURL);
-        client.setProtocol(protocol);
         client.setConfig(otherConfig);
 
-        assert.strictEqual(client.getBaseURL(), baseURL);
-        assert.strictEqual(client.getProtocol(), protocol);
+        assert.deepStrictEqual(client.getBaseURL(), baseURL);
         assert.deepStrictEqual(client.getConfig(), { ...defaults.config(), ...otherConfig });
     });
 
@@ -52,7 +45,7 @@ describe("Nexis instance", () => {
     });
 
     it("should have inherited instance attributes", () => {
-        const protocol = protocols[client.getProtocol()];
+        const protocol = protocols[client.getBaseURL().protocol];
         assert.deepStrictEqual(client.Agent, protocol.Agent);
         assert.deepStrictEqual(client.ClientRequest, protocol.ClientRequest);
         assert.deepStrictEqual(client.IncomingMessage, protocol.IncomingMessage);

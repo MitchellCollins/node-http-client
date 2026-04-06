@@ -5,8 +5,9 @@ const Nexis = require("../lib/core/Nexis");
 const defaults = require("../lib/defaults");
 
 describe("client creator", () => {
-    const defaultConfig = { baseURL: "localhost", protocol: "http", port: 3000 };
+    const defaultConfig = { baseURL: "http://localhost/", port: 3000 };
     const client = createClient(defaultConfig);
+    defaultConfig.baseURL = new URL(defaultConfig.baseURL);
     
     it("should be a function", () => {
         assert.strictEqual(typeof createClient, "function");
@@ -24,7 +25,7 @@ describe("client creator", () => {
         assert.strictEqual(extendedClient instanceof Nexis, true);
         assert.strictEqual(typeof extendedClient.create, "function");
         assert.deepStrictEqual(
-            { baseURL: extendedClient.getBaseURL(), protocol: extendedClient.getProtocol(), ...extendedClient.getConfig() }, 
+            { baseURL: extendedClient.getBaseURL(), ...extendedClient.getConfig() }, 
             { ...defaults.config(), ...defaultConfig, ...instanceConfig }
         );
     });

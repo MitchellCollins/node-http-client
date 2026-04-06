@@ -26,8 +26,7 @@ export type defaults = {
         port: 80,
         timeout: 10000,
     }),
-    res: () => ({ data: null }),
-    protocol: "http:"
+    res: () => ({ data: null })
 }
 export const defaults: defaults;
 

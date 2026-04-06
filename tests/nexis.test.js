@@ -17,8 +17,8 @@ describe("nexis interface", () => {
         assert.strictEqual(extendedClient instanceof Nexis, true);
         assert.strictEqual(typeof extendedClient.create, "function");
         assert.deepStrictEqual(
-            { baseURL: extendedClient.getBaseURL(), protocol: extendedClient.getProtocol(), ...extendedClient.getConfig() }, 
-            { baseURL: defaults.baseURL, protocol: defaults.protocol, ...defaults.config(), ...instanceConfig }
+            { baseURL: extendedClient.getBaseURL(), ...extendedClient.getConfig() }, 
+            { baseURL: new URL(defaults.baseURL), ...defaults.config(), ...instanceConfig }
         );
     });
 });

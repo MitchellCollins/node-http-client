@@ -114,7 +114,7 @@ describe("requests on test server", () => {
         server.close();
     });
     
-    const client = nexis.create({ protocol: "http", port });
+    const client = nexis.create({ port });
     
     it("basic get request promise response", async () => {
         const response = await client.get("/");

@@ -71,6 +71,8 @@ describe("Nexis instance", () => {
     });
 
     it("should have request methods", () => {
+        assert.strictEqual(typeof client.read, "function");
+        assert.strictEqual(typeof client.write, "function");
         assert.strictEqual(typeof client.get, "function");
         assert.strictEqual(typeof client.delete, "function");
         assert.strictEqual(typeof client.post, "function");

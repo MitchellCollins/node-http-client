@@ -115,6 +115,19 @@ describe("requests on test server", () => {
     });
     
     const client = nexis.create({ port });
+
+    it("read get request", async () => {
+        const response = await client.read("/", "get");
+        assert.strictEqual(response.statusCode, 200);
+        assert.strictEqual(response.data, "Hello, World!");
+    });
+
+    it("write post request", async () => {
+        const data = { message: "Hello, World!" };
+        const response = await client.write("/", "post", data);
+        assert.strictEqual(response.statusCode, 200);
+        assert.deepStrictEqual(response.data, data);
+    });
     
     it("basic get request promise response", async () => {
         const response = await client.get("/");

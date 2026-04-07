@@ -120,6 +120,16 @@ export class Nexis {
     setConfig(newConfig?: http.RequestOptions): void;
 
     /**
+     * Makes a read request which is either a `get` or `delete` method.
+     */
+    read(path: string | URL, method: "get" | "delete", configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
+
+    /**
+     * Makes a write request which is either a `post`, `put` or `patch` method.
+     */
+    write(path: string | URL, method: "post" | "put" | "patch", configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;
+
+    /**
      * Make a http(s) get request.
      */
     get(path: string | URL, configOrCb?: http.RequestOptions | NexisCallback, cb?: NexisCallback): Promise<http.IncomingMessage>;

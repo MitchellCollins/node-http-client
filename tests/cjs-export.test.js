@@ -3,7 +3,7 @@ const assert = require("node:assert");
 const nexis = require("../index");
 const { Nexis, defaults, protocols, deepMerge, encodeConfigBody, decodeData } = require("../index");
 
-describe("exports", () => {
+describe("cjs exports", () => {
     it("export default nexis interface", () => {
         assert.strictEqual(nexis instanceof Nexis, true);
     });

@@ -7,7 +7,7 @@
   "types": "./index.d.ts",
   "exports": "./index.js",
   "scripts": {
-    "test": "node --test ./tests/*.test.js"
+    "test": "node --test ./tests/*.test.*"
   },
   "repository": "https://github.com/MitchellCollins/node-http-client.git",
   "keywords": ["nexis", "node", "http", "https", "client", "http-client", "https-client"],

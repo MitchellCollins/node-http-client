@@ -26,6 +26,32 @@ describe("requests on test server", () => {
                     return;
                 }
 
+                // Get auth request
+                if (req.url === "/auth" && req.method === "GET") {
+                    res.writeHead(200, { "content-type": "application/json" });
+                    res.end(req.headers.authorization);
+                    return;
+                }
+
+                // Get date request
+                if (req.url === "/date" && req.method === "GET") {
+                    res.writeHead(200, { "content-type": "text/plain" });
+                    res.end(req.headers.date);
+                    return;
+                }
+
+                // Get redirect request
+                if (req.url === "/resource" && req.method === "GET") {
+                    res.writeHead(301, { location: "/new-resource" });
+                    res.end();
+                    return;
+                }
+                if (req.url === "/new-resource" && req.method === "GET") {
+                    res.writeHead(200, { "content-type": "text/plain" });
+                    res.end("New Resource");
+                    return;
+                }
+
                 // Post object request
                 if (req.url === "/" && req.method === "POST") {
                     res.writeHead(200, { "content-type": "application/json" });
@@ -204,5 +230,25 @@ describe("requests on test server", () => {
         const response = await client.put(`/?${key}=${value}`, {});
         assert.strictEqual(response.statusCode, 200);
         assert.deepStrictEqual(response.data, { [key]: value });
+    });
+
+    it("get authorization request", async () => {
+        const authroization = { username: "Test", password: "1234" };
+        const response = await client.get("/auth", { headers: { authroization } });
+        assert.strictEqual(response.statusCode, 200);
+        assert.deepStrictEqual(response.data, authroization);
+    });
+
+    it("get date request", async () => {
+        const response = await client.get("/date");
+        assert.strictEqual(response.statusCode, 200);
+        assert.strictEqual(typeof response.data, "string");
+        assert.strictEqual(response.data !== "", true, "Expected non empty string");
+    });
+
+    it("get redirect request", async () => {
+        const response = await client.get("/resource");
+        assert.strictEqual(response.statusCode, 200);
+        assert.strictEqual(response.data, "New Resource");
     });
 });

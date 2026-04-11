@@ -240,10 +240,17 @@ describe("requests on test server", () => {
     });
 
     it("get date request", async () => {
-        const response = await client.get("/date");
-        assert.strictEqual(response.statusCode, 200);
-        assert.strictEqual(typeof response.data, "string");
-        assert.strictEqual(response.data !== "", true, "Expected non empty string");
+        // Auto generate date
+        const autoResponse = await client.get("/date");
+        assert.strictEqual(autoResponse.statusCode, 200);
+        assert.strictEqual(typeof autoResponse.data, "string");
+        assert.strictEqual(autoResponse.data !== "", true, "Expected non empty string");
+
+        // Manuelly assign date
+        const date = new Date("April 11, 2026 15:10:00").toUTCString();
+        const manuelResponse = await client.get("/date", { headers: { date }});
+        assert.strictEqual(manuelResponse.statusCode, 200);
+        assert.strictEqual(manuelResponse.data, date);
     });
 
     it("get redirect request", async () => {

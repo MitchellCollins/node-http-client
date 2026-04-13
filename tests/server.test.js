@@ -28,7 +28,7 @@ describe("requests on test server", () => {
 
                 // Get auth request
                 if (req.url === "/auth" && req.method === "GET") {
-                    res.writeHead(200, { "content-type": "application/json" });
+                    res.writeHead(200, { "content-type": "text/plain" });
                     res.end(req.headers.authorization);
                     return;
                 }
@@ -232,11 +232,42 @@ describe("requests on test server", () => {
         assert.deepStrictEqual(response.data, { [key]: value });
     });
 
-    it("get authorization request", async () => {
-        const authroization = { username: "Test", password: "1234" };
-        const response = await client.get("/auth", { headers: { authroization } });
+    it("basic authorization request", async () => {
+        const authorization = { scheme: "basic", username: "test", password: "1234" };
+        const { username, password } = authorization;
+        const response = await client.get("/auth", { headers: { authorization }});
         assert.strictEqual(response.statusCode, 200);
-        assert.deepStrictEqual(response.data, authroization);
+        assert.strictEqual(response.data, `Basic ${btoa(`${username}:${password}`)}`);
+    });
+
+    it("bearer authorization request", async () => {
+        const authorization = { scheme: "bearer", token: "hfghe7373rdgf" };
+        const response = await client.get("/auth", { headers: { authorization }});
+        assert.strictEqual(response.statusCode, 200);
+        assert.strictEqual(response.data, `Bearer ${authorization.token}`);
+    });
+
+    it("digest authorization request", async () => {
+        const authorization = { scheme: "digest", username: "test", realm: "test" };
+        const response = await client.get("/auth", { headers: { authorization } });
+        assert.strictEqual(response.statusCode, 200);
+        assert.deepStrictEqual(response.data, "Digest username=test,realm=test");
+    });
+
+    it("unformatted bearer request", async () => {
+        const authorization = "Bearer hfghe7373rdgf";
+        const response = await client.get("/auth", { headers: { authorization }});
+        assert.strictEqual(response.statusCode, 200);
+        assert.strictEqual(response.data, authorization);
+    });
+
+    it("invalid authorization scheme error thrown", () => {
+        const authorization = { scheme: "invalid", username: "test" };
+        assert.rejects(
+            async () => await client.get("/auth", { headers: { authorization }}),
+            (err) => err instanceof TypeError && err.message.includes("Invalid Auth Scheme"),
+            "should reject invalid auth scheme"
+        );
     });
 
     it("get date request", async () => {

@@ -58,6 +58,16 @@ export type decodeData = (data: string, contentType: string) => string | object 
 export const decodeData: decodeData;
 
 /**
+ * Used to format json auth credentials to string, following the scheme format.
+ * The scheme is defined in the `scheme` property of the `auth` param. Supported scheme formates include `basic`, `bearer` & `digest`.
+ * - `Basic` scheme requires `username` & `password` params.
+ * - `Bearer` scheme requires `token` param.
+ * - `Digest` scheme loops through every provided param.
+ */
+export type authFormatter = (auth: { scheme: "basic" | "bearer" | "digest"; token?: string; username?: string; password?: string; [key: string]: string }, onReject: NexisCallback) => string;
+export const authFormatter: authFormatter;
+
+/**
  * Creates a `Nexis` instance that uses the `node:http` & `node:https` libraries to make http(s) request and receive responses.
  * Simplifys making requests by auto configurating, encoding and decoding data, and sets up default event handlers and values.
  * Additionally, provides many options to handle a response or error.
@@ -186,5 +196,6 @@ const nexis: NexisFactory & {
     deepMerge: deepMerge;
     encodeConfigBody: encodeConfigBody;
     decodeData: decodeData;
+    authFormatter: authFormatter;
 };
 export default nexis;

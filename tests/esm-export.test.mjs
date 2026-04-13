@@ -31,4 +31,8 @@ describe("esm exports", () => {
     it("decodeData function", () => {
         assert.strictEqual(typeof nexis.decodeData, "function");
     });
+
+    it("authFormatter function", () => {
+        assert.strictEqual(typeof nexis.authFormatter, "function");
+    });
 });

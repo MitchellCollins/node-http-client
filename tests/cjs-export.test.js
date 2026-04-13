@@ -1,7 +1,7 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert");
 const nexis = require("../index");
-const { Nexis, defaults, protocols, deepMerge, encodeConfigBody, decodeData } = require("../index");
+const { Nexis, defaults, protocols, deepMerge, encodeConfigBody, decodeData, authFormatter } = require("../index");
 
 describe("cjs exports", () => {
     it("export default nexis interface", () => {
@@ -31,5 +31,9 @@ describe("cjs exports", () => {
 
     it("decodeData function", () => {
         assert.strictEqual(typeof decodeData, "function");
+    });
+
+    it("authFormatter function", () => {
+        assert.strictEqual(typeof authFormatter, "function");
     });
 });

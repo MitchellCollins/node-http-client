@@ -47,8 +47,13 @@ describe("requests on test server", () => {
                     return;
                 }
                 if (req.url === "/new-resource" && req.method === "GET") {
+                    res.writeHead(301, { location: "/newer-resource" });
+                    res.end();
+                    return;
+                }
+                if (req.url === "/newer-resource" && req.method === "GET") {
                     res.writeHead(200, { "content-type": "text/plain" });
-                    res.end("New Resource");
+                    res.end("Newer Resource");
                     return;
                 }
 
@@ -140,7 +145,7 @@ describe("requests on test server", () => {
         server.close();
     });
     
-    const client = nexis.create({ port });
+    const client = nexis.create({ port, maxRedirects: 2 });
 
     it("read get request", async () => {
         const response = await client.read("/", "get");
@@ -285,8 +290,18 @@ describe("requests on test server", () => {
     });
 
     it("get redirect request", async () => {
-        const response = await client.get("/resource");
-        assert.strictEqual(response.statusCode, 200);
-        assert.strictEqual(response.data, "New Resource");
+        const redirectResponse = await client.get("/resource");
+        assert.strictEqual(redirectResponse.statusCode, 200, "should redirect to /newer-resource");
+        assert.strictEqual(redirectResponse.data, "Newer Resource", "should redirect to /newer-resource");
+
+        // Checks that the maxRedirect config isn't updated by reference
+        //      When the request subtracts it and passes it as the config to the next request
+        assert.strictEqual(client.getConfig().maxRedirects, 2, "maxRedirects should remain as set");
+
+        // Shouldn't redirect when set to 0
+        client.setConfig({ port, maxRedirects: 0 });
+        const nonRedirectResponse = await client.get("/resource");
+        assert.strictEqual(nonRedirectResponse.statusCode, 301, "shouldn't redirect when set to 0");
+        assert.strictEqual(nonRedirectResponse.headers.location, "/new-resource", "shouldn't redirect when set to 0");
     });
 });

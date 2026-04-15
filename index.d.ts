@@ -15,7 +15,7 @@ export type NexisCallback = (res: http.IncomingMessage, err?: Error) => void;
 /**
  * Configuration options for a `Nexis` instance.
  */
-export type NexisConfig = http.RequestOptions & { baseURL: string | URL }
+export type NexisConfig = http.RequestOptions & { baseURL: string | URL; maxRedirects?: number }
 
 /**
  * Defines the default values.
@@ -25,6 +25,7 @@ export type defaults = {
     config: () => ({ 
         port: 80,
         timeout: 10000,
+        maxRedirects: 0
     }),
     res: () => ({ data: null })
 }

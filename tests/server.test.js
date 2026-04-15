@@ -57,6 +57,13 @@ describe("requests on test server", () => {
                     return;
                 }
 
+                // Get case-insenitive request
+                if (req.url === "/case" && req.method === "GET") {
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Hello" }));
+                    return;
+                }
+
                 // Post object request
                 if (req.url === "/" && req.method === "POST") {
                     res.writeHead(200, { "content-type": "application/json" });
@@ -303,5 +310,28 @@ describe("requests on test server", () => {
         const nonRedirectResponse = await client.get("/resource");
         assert.strictEqual(nonRedirectResponse.statusCode, 301, "shouldn't redirect when set to 0");
         assert.strictEqual(nonRedirectResponse.headers.location, "/new-resource", "shouldn't redirect when set to 0");
+    });
+
+    it("get request case-insenitive", async () => {
+        const response = await client.get("/case");
+        assert.strictEqual(response.statusCode, 200);
+        assert.deepStrictEqual(response.data, { message: "Hello" });
+
+        // Test getHeaders method
+        assert.deepStrictEqual(
+            response.getHeaders(["content-type", "connection"]), 
+            { "content-type": "application/json", "connection": "keep-alive" },
+            "response should have getHeaders method"
+        );
+
+        // Test getHeaderNames method
+        assert.deepStrictEqual(
+            response.getHeaderNames(),
+            ["content-type", "date", "connection", "keep-alive", "transfer-encoding"],
+            "response should have getHeaderNames method"
+        );
+
+        // Test hasHeader method
+        assert.strictEqual(response.hasHeader("Content-Type"), true, "response should have hasHeader method");
     });
 });

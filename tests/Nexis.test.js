@@ -95,5 +95,11 @@ describe("Nexis instance", () => {
         assert.deepStrictEqual(client.maxHeaderSize, http.maxHeaderSize);
         assert.deepStrictEqual(client.validateHeaderName, http.validateHeaderName);
         assert.deepStrictEqual(client.validateHeaderValue, http.validateHeaderValue);
+
+        // Implemented custom header getter methods
+        assert.strictEqual(typeof client.IncomingMessage.prototype.getHeader, "function", "inherited IncomingMessage class should have custom getHeader method");
+        assert.strictEqual(typeof client.IncomingMessage.prototype.getHeaders, "function", "inherited IncomingMessage class should have custom getHeaders method");
+        assert.strictEqual(typeof client.IncomingMessage.prototype.getHeaderNames, "function", "inherited IncomingMessage class should have custom getHeaderNames method");
+        assert.strictEqual(typeof client.IncomingMessage.prototype.hasHeader, "function", "inherited IncomingMessage class should have custom hasHeader method");
     });
 });

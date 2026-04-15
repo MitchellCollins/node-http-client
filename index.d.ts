@@ -18,6 +18,20 @@ export type NexisCallback = (res: http.IncomingMessage, err?: Error) => void;
 export type NexisConfig = http.RequestOptions & { baseURL: string | URL; maxRedirects?: number }
 
 /**
+ * A class that extends off the `http.IncomingMessage` class and implements custom `header` methods.
+ * @class
+ * @extends {http.IncomingMessage}
+ */
+export class NexisIncomingMessage extends http.IncomingMessage {
+    constructor(socket: net.Socket);
+    
+    getHeader(name: string): string | string[];
+    getHeaders(names: string[]): http.IncomingHttpHeaders;
+    getHeaderNames(): string[];
+    hasHeader(name: string): boolean;
+}
+
+/**
  * Defines the default values.
  */
 export type defaults = {
@@ -167,7 +181,7 @@ export class Nexis {
 
     Agent: http.Agent;
     ClientRequest: http.ClientRequest;
-    IncomingMessage: http.IncomingMessage;
+    IncomingMessage: NexisIncomingMessage;
     OutgoingMessage: http.OutgoingMessage;
     METHODS: typeof http.METHODS;
     STATUS_CODES: typeof http.STATUS_CODES;

@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Runs npm test
+    name: Test using npm test & lint
     runs-on: ubuntu-latest
 
     steps:
@@ -18,3 +18,4 @@ jobs:
         with:
           node-version: 24
       - run: npm test
+      - run: npm run lint

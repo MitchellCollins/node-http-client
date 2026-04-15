@@ -5,28 +5,28 @@ const Nexis = require("../lib/core/Nexis");
 const defaults = require("../lib/defaults");
 
 describe("client creator", () => {
-    const defaultConfig = { baseURL: "http://localhost/", port: 3000 };
-    const client = createClient(defaultConfig);
-    defaultConfig.baseURL = new URL(defaultConfig.baseURL);
-    
-    it("should be a function", () => {
-        assert.strictEqual(typeof createClient, "function");
-    });
+  const defaultConfig = { baseURL: "http://localhost/", port: 3000 };
+  const client = createClient(defaultConfig);
+  defaultConfig.baseURL = new URL(defaultConfig.baseURL);
 
-    it("should return client", () => {
-        assert.strictEqual(client instanceof Nexis, true);
-    });
+  it("should be a function", () => {
+    assert.strictEqual(typeof createClient, "function");
+  });
 
-    it("should return client with extended creation", () => {
-        assert.strictEqual(typeof client.create, "function");
+  it("should return client", () => {
+    assert.strictEqual(client instanceof Nexis, true);
+  });
 
-        const instanceConfig = { port: 4000 };
-        const extendedClient = client.create(instanceConfig);
-        assert.strictEqual(extendedClient instanceof Nexis, true);
-        assert.strictEqual(typeof extendedClient.create, "function");
-        assert.deepStrictEqual(
-            { baseURL: extendedClient.getBaseURL(), ...extendedClient.getConfig() }, 
-            { ...defaults.config(), ...defaultConfig, ...instanceConfig }
-        );
-    });
+  it("should return client with extended creation", () => {
+    assert.strictEqual(typeof client.create, "function");
+
+    const instanceConfig = { port: 4000 };
+    const extendedClient = client.create(instanceConfig);
+    assert.strictEqual(extendedClient instanceof Nexis, true);
+    assert.strictEqual(typeof extendedClient.create, "function");
+    assert.deepStrictEqual(
+      { baseURL: extendedClient.getBaseURL(), ...extendedClient.getConfig() },
+      { ...defaults.config(), ...defaultConfig, ...instanceConfig },
+    );
+  });
 });

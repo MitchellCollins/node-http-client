@@ -5,11 +5,11 @@ This package provides a simple API for making HTTP requests and handling respons
 
 ## Features
 
-* Simple API for HTTP requests
-* Built on Node.js native `http` module
-* Supports common HTTP methods
-* Lightweight with no external dependencies
-* Promise-based or callback-based responses
+- Simple API for HTTP requests
+- Built on Node.js native `http` module
+- Supports common HTTP methods
+- Lightweight with no external dependencies
+- Promise-based or callback-based responses
 
 ## Installation
 
@@ -31,11 +31,11 @@ const HTTPClient = require("node-http-client");
 
 ```js
 HTTPClient.get("jsonplaceholder.typicode.com/posts/1")
-  .then(response => {
+  .then((response) => {
     console.log(response.status);
     console.log(response.data);
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
   });
 ```
@@ -48,9 +48,8 @@ HTTPClient.get("jsonplaceholder.typicode.com/posts/1")
 HTTP.post("jsonplaceholder.typicode.com/posts", {
   title: "Hello",
   body: "Testing request",
-  userId: 1
-})
-.then(response => {
+  userId: 1,
+}).then((response) => {
   console.log(response.data);
 });
 ```
@@ -61,17 +60,17 @@ HTTP.post("jsonplaceholder.typicode.com/posts", {
 
 ```js
 const client = new HTTPClient({
-    baseURL: "jsonplaceholder.typicode.com",
-    port: 80,
+  baseURL: "jsonplaceholder.typicode.com",
+  port: 80,
 });
 
 client.get("/posts/1", (res, err) => {
-    if (err) {
-        console.error("Request Error:", err);
-        return;
-    }
+  if (err) {
+    console.error("Request Error:", err);
+    return;
+  }
 
-    console.log("Response:", res);
+  console.log("Response:", res);
 });
 ```
 
@@ -95,8 +94,8 @@ Sends a GET request.
 
 **Parameters**
 
-* `url` – The request URL
-* `options` – Optional request configuration
+- `url` – The request URL
+- `options` – Optional request configuration
 
 ---
 
@@ -106,9 +105,9 @@ Sends a POST request.
 
 **Parameters**
 
-* `url` – The request URL
-* `body` – Request body
-* `options` – Optional request configuration
+- `url` – The request URL
+- `body` – Request body
+- `options` – Optional request configuration
 
 ---
 
@@ -127,8 +126,8 @@ Sends a POST request.
 
 You can test requests using free public APIs such as:
 
-* https://jsonplaceholder.typicode.com
-* https://httpbin.org
+- https://jsonplaceholder.typicode.com
+- https://httpbin.org
 
 Example:
 
@@ -144,9 +143,7 @@ GET https://jsonplaceholder.typicode.com/posts/1
 const HTTPClient = require("simple-http-client");
 
 async function run() {
-  const res = await HTTPClient.get(
-    "http://jsonplaceholder.typicode.com/users"
-  );
+  const res = await HTTPClient.get("http://jsonplaceholder.typicode.com/users");
 
   console.log(res.data);
 }

@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ "main", "v1.*" ]
+    branches: ["main", "v1.*"]
   pull_request:
-    branches: [ "main", "v1.*" ]
+    branches: ["main", "v1.*"]
 
 jobs:
   test:
@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Test using Node v24
-      uses: actions/setup-node@v4
-      with:
-        node-version: 24
-    - run: npm test
+      - uses: actions/checkout@v4
+      - name: Test using Node v24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm test

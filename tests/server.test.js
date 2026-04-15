@@ -174,7 +174,7 @@ describe("requests on test server", () => {
     });
 
     it("basic get request callback response", async () => {
-        client.get("/", (response, err) => {
+        client.get("/", (response) => {
             assert.strictEqual(response.statusCode, 200);
             assert.strictEqual(response.data, "Hello, World!");
         });

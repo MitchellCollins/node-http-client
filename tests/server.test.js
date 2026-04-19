@@ -63,6 +63,15 @@ describe("requests on test server", () => {
           return;
         }
 
+        // Get timeout request
+        if (req.url === "/timeout" && req.method === "GET") {
+          /* eslint no-empty: "off" */
+          for (let i = 0; i < 100; i++) {}
+          res.writeHead(200);
+          res.end();
+          return;
+        }
+
         // Post object request
         if (req.url === "/" && req.method === "POST") {
           res.writeHead(200, { "content-type": "application/json" });
@@ -376,6 +385,16 @@ describe("requests on test server", () => {
       response.hasHeader("Content-Type"),
       true,
       "response should have hasHeader method",
+    );
+  });
+
+  it("get timeout request", () => {
+    assert.rejects(
+      async () => await client.get("/timeout", { timeout: 1 }),
+      (err) =>
+        err instanceof Error &&
+        err.message.includes("Socket Connection Timeout"),
+      "should reject timeout error",
     );
   });
 });

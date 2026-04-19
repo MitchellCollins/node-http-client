@@ -65,6 +65,7 @@ describe("requests on test server", () => {
 
         // Get timeout request
         if (req.url === "/timeout" && req.method === "GET") {
+          /* eslint no-empty: "off" */
           for (let i = 0; i < 100; i++) {}
           res.writeHead(200);
           res.end();

@@ -390,8 +390,10 @@ describe("requests on test server", () => {
   it("get timeout request", () => {
     assert.rejects(
       async () => await client.get("/timeout", { timeout: 1 }),
-      (err) => err instanceof Error && err.message.includes("Socket Connection Timeout"),
-      "should reject timeout error"
+      (err) =>
+        err instanceof Error &&
+        err.message.includes("Socket Connection Timeout"),
+      "should reject timeout error",
     );
   });
 });

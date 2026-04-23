@@ -43,44 +43,59 @@ describe("Nexis instance", () => {
     });
   });
 
-  it("should validate request header", () => {
-    const invalidTokenErr = (err) =>
-      err instanceof TypeError && err.code === "ERR_INVALID_HTTP_TOKEN";
-    const invalidValueErr = (err) =>
-      err instanceof TypeError && err.code === "ERR_HTTP_INVALID_HEADER_VALUE";
-
+  it("should validate request header", async () => {
     // Validate name during set
     assert.throws(
       () =>
         client.setConfig({ headers: { "content type": "application/json" } }),
-      invalidTokenErr,
+      (err) =>
+        err instanceof TypeError && err.code === "ERR_INVALID_HTTP_TOKEN",
       "should reject invalid header name on set",
     );
 
     // Validate value during set
     assert.throws(
       () => client.setConfig({ headers: { "content-type": undefined } }),
-      invalidValueErr,
+      (err) =>
+        err instanceof TypeError &&
+        err.code === "ERR_HTTP_INVALID_HEADER_VALUE",
       "should reject invalid header value on set",
     );
 
-    // Validate name during request
-    assert.rejects(
-      async () =>
-        await client.get("/", {
-          headers: { "content type": "application/json" },
-        }),
-      invalidTokenErr,
-      "should reject invalid header name on request",
-    );
+    // Validate header during request
+    // Receives errors
+    const [nameErr, valueErr] = await Promise.all([
+      new Promise((resolve) =>
+        client
+          .get("/", { headers: { "content type": "application/json" } })
+          .catch(resolve),
+      ),
+      new Promise((resolve) =>
+        client
+          .get("/", { headers: { "content-type": undefined } })
+          .catch(resolve),
+      ),
+    ]);
 
-    // Validate value during request
-    assert.rejects(
-      async () =>
-        await client.get("/", { headers: { "content-type": undefined } }),
-      invalidValueErr,
-      "should reject invalid header value on request",
+    // Invalid name error
+    assert.ok(nameErr.req, "should provide request object");
+    assert.ok(nameErr.res, "should provide response object");
+    assert.strictEqual(
+      nameErr instanceof TypeError,
+      true,
+      "should reject TypeError",
     );
+    assert.strictEqual(nameErr.code, "ERR_INVALID_HTTP_TOKEN");
+
+    // Invalid value error
+    assert.ok(valueErr.req, "should provide request object");
+    assert.ok(valueErr.res, "should provide response object");
+    assert.strictEqual(
+      valueErr instanceof TypeError,
+      true,
+      "should reject TypeError",
+    );
+    assert.strictEqual(valueErr.code, "ERR_HTTP_INVALID_HEADER_VALUE");
   });
 
   it("should have request methods", () => {

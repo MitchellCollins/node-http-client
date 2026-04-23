@@ -1,6 +1,7 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert");
 const authFormatter = require("../lib/utils/authFormatter");
+const NexisError = require("../lib/core/NexisError");
 
 describe("Auth Formatter", () => {
   it("should be a function", () => {
@@ -39,9 +40,9 @@ describe("Auth Formatter", () => {
       (error) => {
         try {
           assert.strictEqual(
-            error instanceof TypeError,
+            error instanceof NexisError,
             true,
-            "should reject TypeError",
+            "should reject NexisError",
           );
           assert.strictEqual(
             error.message.includes("Invalid Auth Scheme"),

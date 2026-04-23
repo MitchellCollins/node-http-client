@@ -3,6 +3,7 @@ const assert = require("node:assert");
 const nexis = require("../index");
 const {
   Nexis,
+  NexisError,
   defaults,
   protocols,
   deepMerge,
@@ -19,6 +20,11 @@ describe("cjs exports", () => {
   it("Nexis class", () => {
     assert.strictEqual(typeof Nexis, "function");
     assert.match(Nexis.toString(), /^class\s/);
+  });
+
+  it("NexisError class", () => {
+    assert.strictEqual(typeof NexisError, "function");
+    assert.match(NexisError.toString(), /^class\s/);
   });
 
   it("default values", () => {

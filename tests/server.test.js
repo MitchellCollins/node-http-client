@@ -313,9 +313,9 @@ describe("requests on test server", () => {
         assert.ok(error.req, "should provide request object");
         assert.ok(error.res, "should provide response object");
         assert.strictEqual(
-          error instanceof TypeError,
+          error instanceof nexis.NexisError,
           true,
-          "should reject TypeError",
+          "should reject NexisError",
         );
         assert.strictEqual(
           error.message.includes("Invalid Auth Scheme"),

@@ -16,12 +16,30 @@ export type NexisBody =
   | URLSearchParams;
 
 /**
+ * The code of a `NexisError`.
+ */
+export type NexisErrorCode =
+  | "ERR_INVALID_AUTH_SCHEME"
+  | "ERR_INVALID_HTTP_TOKEN"
+  | "ERR_HTTP_INVALID_HEADER_VALUE"
+  | "ERR_HTTP_REQUEST_TIMEOUT";
+
+/**
  * A `Nexis` error with `request` and `response` objects attached.
  */
-export type NexisError = Error & {
+export class NexisError extends Error {
+  constructor(
+    message: string | Error,
+    options?: ErrorOptions & {
+      code?: NexisErrorCode;
+      req?: http.ClientRequest;
+      res?: http.IncomingMessage;
+    },
+  );
+  code: string;
   req: http.ClientRequest;
   res: http.IncomingMessage;
-};
+}
 
 /**
  * A `Nexis` callback function to handle response and error.
@@ -289,6 +307,7 @@ export interface NexisFactory extends Nexis {
  */
 const nexis: NexisFactory & {
   Nexis: Nexis;
+  NexisError: NexisError;
   defaults: defaults;
   protocols: Protocols;
   deepMerge: deepMerge;

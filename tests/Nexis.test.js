@@ -4,6 +4,7 @@ const http = require("node:http");
 const Nexis = require("../lib/core/Nexis");
 const defaults = require("../lib/defaults");
 const protocols = require("../lib/protocols");
+const NexisError = require("../lib/core/NexisError");
 
 describe("Nexis class", () => {
   it("should be a class", () => {
@@ -81,9 +82,9 @@ describe("Nexis instance", () => {
     assert.ok(nameErr.req, "should provide request object");
     assert.ok(nameErr.res, "should provide response object");
     assert.strictEqual(
-      nameErr instanceof TypeError,
+      nameErr instanceof NexisError,
       true,
-      "should reject TypeError",
+      "should reject NexisError",
     );
     assert.strictEqual(nameErr.code, "ERR_INVALID_HTTP_TOKEN");
 
@@ -91,9 +92,9 @@ describe("Nexis instance", () => {
     assert.ok(valueErr.req, "should provide request object");
     assert.ok(valueErr.res, "should provide response object");
     assert.strictEqual(
-      valueErr instanceof TypeError,
+      valueErr instanceof NexisError,
       true,
-      "should reject TypeError",
+      "should reject NexisError",
     );
     assert.strictEqual(valueErr.code, "ERR_HTTP_INVALID_HEADER_VALUE");
   });

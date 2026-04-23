@@ -12,6 +12,11 @@ describe("esm exports", () => {
     assert.match(nexis.Nexis.toString(), /^class\s/);
   });
 
+  it("NexisError class", () => {
+    assert.strictEqual(typeof nexis.NexisError, "function");
+    assert.match(nexis.NexisError.toString(), /^class\s/);
+  });
+
   it("default values", () => {
     assert.strictEqual(typeof nexis.defaults, "object");
   });

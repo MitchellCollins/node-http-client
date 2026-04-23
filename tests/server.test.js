@@ -3,7 +3,6 @@ const assert = require("node:assert");
 const http = require("node:http");
 const Stream = require("node:stream");
 const nexis = require("../index");
-const defaults = require("../lib/defaults");
 
 describe("requests on test server", () => {
   let server;

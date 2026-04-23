@@ -1,5 +1,6 @@
 import * as http from "node:http";
 import * as https from "node:https";
+import EventEmitter from "node:events";
 import { Stream } from "node:stream";
 
 /**
@@ -15,9 +16,20 @@ export type NexisBody =
   | URLSearchParams;
 
 /**
+ * A `Nexis` error with `request` and `response` objects attached.
+ */
+export type NexisError = Error & {
+  req: http.ClientRequest;
+  res: http.IncomingMessage;
+};
+
+/**
  * A `Nexis` callback function to handle response and error.
  */
-export type NexisCallback = (res: http.IncomingMessage, err?: Error) => void;
+export type NexisCallback = (
+  res: http.IncomingMessage,
+  err?: NexisError,
+) => void;
 
 /**
  * Configuration options for a `Nexis` instance.
@@ -52,6 +64,7 @@ export type defaults = {
     maxRedirects: 0;
   };
   res: () => { data: null };
+  req: () => {};
 };
 export const defaults: defaults;
 
@@ -102,9 +115,20 @@ export type authFormatter = (
     password?: string;
     [key: string]: string;
   },
-  onReject: NexisCallback,
+  onReject: (err: TypeError) => void,
 ) => string;
 export const authFormatter: authFormatter;
+
+/**
+ * Defines `Nexis` events and their arguments.
+ */
+export interface NexisEvents {
+  request: [req: http.ClientRequest];
+  data: [data: string];
+  redirect: [res: http.IncomingMessage, config: NexisConfig];
+  response: [res: http.IncomingMessage];
+  error: [err: NexisError];
+}
 
 /**
  * Creates a `Nexis` instance that uses the `node:http` & `node:https` libraries to make http(s) request and receive responses.
@@ -132,8 +156,9 @@ export const authFormatter: authFormatter;
  *      }
  *
  * @class
+ * @extends {EventEmitter}
  */
-export class Nexis {
+export class Nexis extends EventEmitter<NexisEvents> {
   /**
    * Creates a `Nexis` instance that uses the `node:http` & `node:https` libraries to make http(s) request and receive responses.
    * Simplifys making requests by auto configurating, encoding and decoding data, and sets up default event handlers and values.
@@ -160,6 +185,7 @@ export class Nexis {
    *      }
    *
    * @class
+   * @extends {EventEmitter}
    */
   constructor(config: NexisConfig);
 

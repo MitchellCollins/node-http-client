@@ -35,14 +35,25 @@ describe("Auth Formatter", () => {
 
   it("should reject invalid auth scheme", () => {
     const auth = { scheme: "invalid" };
-    assert.rejects(
-      () =>
-        new Promise((resolve, reject) =>
-          authFormatter(auth, (res, err) => reject(err)),
-        ),
-      (err) =>
-        err instanceof TypeError && err.message.includes("Invalid Auth Scheme"),
-      "should reject invalid auth scheme",
-    );
+    () =>
+      new Promise((resolve, reject) =>
+        authFormatter(auth, (err) => reject(err)),
+      ).catch(({ err: error }) => {
+        try {
+          assert.strictEqual(
+            error instanceof TypeError,
+            true,
+            "should reject TypeError",
+          );
+          assert.strictEqual(
+            error.message.includes("Invalid Auth Scheme"),
+            true,
+            "error should include 'Invalid Auth Scheme'",
+          );
+          done();
+        } catch (err) {
+          done(err);
+        }
+      });
   });
 });

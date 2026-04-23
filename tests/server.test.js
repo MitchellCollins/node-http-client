@@ -3,6 +3,7 @@ const assert = require("node:assert");
 const http = require("node:http");
 const Stream = require("node:stream");
 const nexis = require("../index");
+const defaults = require("../lib/defaults");
 
 describe("requests on test server", () => {
   let server;
@@ -15,7 +16,7 @@ describe("requests on test server", () => {
         chunks.push(chunk);
       });
 
-      req.on("end", () => {
+      req.on("end", async () => {
         if (chunks.length > 0) req.body = Buffer.concat(chunks).toString();
 
         // Basic get request
@@ -66,9 +67,17 @@ describe("requests on test server", () => {
         // Get timeout request
         if (req.url === "/timeout" && req.method === "GET") {
           /* eslint no-empty: "off" */
-          for (let i = 0; i < 100; i++) {}
+          async function timeout() {
+            return setTimeout(() => res.end(), 1);
+          }
+          await timeout();
+          return;
+        }
+
+        // Get events request
+        if (req.url === "/events" && req.method === "GET") {
           res.writeHead(200);
-          res.end();
+          res.end(req.getHeader("content-type"));
           return;
         }
 
@@ -167,6 +176,7 @@ describe("requests on test server", () => {
   });
 
   const client = nexis.create({ port, maxRedirects: 2 });
+  const timeout = 500; // Test timeout
 
   it("read get request", async () => {
     const response = await client.read("/", "get");
@@ -297,14 +307,27 @@ describe("requests on test server", () => {
     assert.strictEqual(response.data, authorization);
   });
 
-  it("invalid authorization scheme error thrown", () => {
+  it("invalid authorization scheme error thrown", { timeout }, (t, done) => {
     const authorization = { scheme: "invalid", username: "test" };
-    assert.rejects(
-      async () => await client.get("/auth", { headers: { authorization } }),
-      (err) =>
-        err instanceof TypeError && err.message.includes("Invalid Auth Scheme"),
-      "should reject invalid auth scheme",
-    );
+    client.get("/auth", { headers: { authorization } }).catch((error) => {
+      try {
+        assert.ok(error.req, "should provide request object");
+        assert.ok(error.res, "should provide response object");
+        assert.strictEqual(
+          error instanceof TypeError,
+          true,
+          "should reject TypeError",
+        );
+        assert.strictEqual(
+          error.message.includes("Invalid Auth Scheme"),
+          true,
+          "error message should include 'Invalid Auth Scheme'",
+        );
+        done();
+      } catch (err) {
+        done(err);
+      }
+    });
   });
 
   it("get date request", async () => {
@@ -388,13 +411,74 @@ describe("requests on test server", () => {
     );
   });
 
-  it("get timeout request", () => {
-    assert.rejects(
-      async () => await client.get("/timeout", { timeout: 1 }),
-      (err) =>
-        err instanceof Error &&
-        err.message.includes("Socket Connection Timeout"),
-      "should reject timeout error",
-    );
+  it("get timeout request", { timeout }, (t, done) => {
+    client.get("/timeout", { timeout: 1 }).catch((error) => {
+      try {
+        assert.ok(error.req, "should provide request object");
+        assert.ok(error.res, "should provide response object");
+        assert.strictEqual(error instanceof Error, true, "should reject Error");
+        assert.strictEqual(
+          error.message.includes("Socket Connection Timeout"),
+          true,
+          "error message should include 'Socket Connection Timeout'",
+        );
+        done();
+      } catch (err) {
+        done(err);
+      }
+    });
+  });
+
+  it("get events request", { timeout }, (t, done) => {
+    const contentType = "Hello";
+    client.once("request", (req) => {
+      req.setHeader("content-type", contentType);
+    });
+    client.once("data", (data) => {
+      assert.strictEqual(data, contentType);
+    });
+    client.once("response", (res) => {
+      try {
+        assert.strictEqual(res.statusCode, 200);
+        assert.strictEqual(res.data, contentType);
+        done();
+      } catch (err) {
+        done(err);
+      }
+    });
+    client.get("/events");
+  });
+
+  it("get event redirect request", { timeout }, (t, done) => {
+    client.once("redirect", (res, config) => {
+      try {
+        assert.strictEqual(res.statusCode, 301);
+        assert.strictEqual(res.getHeader("location"), "/new-resource");
+        assert.strictEqual(config.port, port);
+        assert.strictEqual(config.maxRedirects, 1);
+      } catch (err) {
+        done(err);
+      }
+    });
+    client.once("response", () => {
+      done();
+    });
+    client.get("/resource", { maxRedirects: 1 });
+  });
+
+  it("get events error request", { timeout }, (t, done) => {
+    client.once("error", (error) => {
+      try {
+        assert.ok(error.req, "should provide request object");
+        assert.ok(error.res, "should provide response object");
+        assert.strictEqual(error instanceof Error, true, "should reject Error");
+        done();
+      } catch (err) {
+        done(err);
+      }
+    });
+
+    // Creates timeout error
+    client.get("/timeout", { timeout: 1 });
   });
 });

@@ -11,6 +11,10 @@ describe("Nexis class", () => {
     assert.strictEqual(typeof Nexis, "function");
     assert.match(Nexis.toString(), /^class\s/);
   });
+
+  it("should construct without optional params", () => {
+    assert.strictEqual(new Nexis() instanceof Nexis, true);
+  });
 });
 
 describe("Nexis instance", () => {

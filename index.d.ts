@@ -50,6 +50,15 @@ export type NexisCallback = (
 ) => void;
 
 /**
+ * A `Nexis` method request function.
+ */
+export type NexisMethodRequest = (
+  path?: string | URL,
+  configOrCb?: http.RequestOptions | NexisCallback,
+  cb?: NexisCallback,
+) => Promise<http.IncomingMessage>;
+
+/**
  * Configuration options for a `Nexis` instance.
  */
 export type NexisConfig = http.RequestOptions & {
@@ -76,6 +85,8 @@ export class NexisIncomingMessage extends http.IncomingMessage {
  */
 export type defaults = {
   baseURL: "http://localhost:80/";
+  path: "/";
+  method: { read: "get"; write: "post" };
   config: () => {
     port: 80;
     timeout: 10000;
@@ -205,7 +216,7 @@ export class Nexis extends EventEmitter<NexisEvents> {
    * @class
    * @extends {EventEmitter}
    */
-  constructor(config: NexisConfig);
+  constructor(config?: NexisConfig);
 
   getBaseURL(): URL;
   getConfig(): http.RequestOptions;
@@ -216,8 +227,8 @@ export class Nexis extends EventEmitter<NexisEvents> {
    * Makes a read request which is either a `get` or `delete` method.
    */
   read(
-    path: string | URL,
-    method: "get" | "delete",
+    path?: string | URL,
+    method?: "get" | "delete",
     configOrCb?: http.RequestOptions | NexisCallback,
     cb?: NexisCallback,
   ): Promise<http.IncomingMessage>;
@@ -226,8 +237,8 @@ export class Nexis extends EventEmitter<NexisEvents> {
    * Makes a write request which is either a `post`, `put` or `patch` method.
    */
   write(
-    path: string | URL,
-    method: "post" | "put" | "patch",
+    path?: string | URL,
+    method?: "post" | "put" | "patch",
     configOrCb?: http.RequestOptions | NexisCallback,
     cb?: NexisCallback,
   ): Promise<http.IncomingMessage>;
@@ -235,50 +246,27 @@ export class Nexis extends EventEmitter<NexisEvents> {
   /**
    * Make a http(s) get request.
    */
-  get(
-    path: string | URL,
-    configOrCb?: http.RequestOptions | NexisCallback,
-    cb?: NexisCallback,
-  ): Promise<http.IncomingMessage>;
+  get: NexisMethodRequest;
 
   /**
    * Make a http(s) delete request.
    */
-  delete(
-    path: string | URL,
-    configOrCb?: http.RequestOptions | NexisCallback,
-    cb?: NexisCallback,
-  ): Promise<http.IncomingMessage>;
+  delete: NexisMethodRequest;
 
   /**
    * Make a http(s) post request.
    */
-  post(
-    path: string | URL,
-    body: NexisBody,
-    configOrCb?: http.RequestOptions | NexisCallback,
-    cb?: NexisCallback,
-  ): Promise<http.IncomingMessage>;
+  post: NexisMethodRequest;
 
   /**
    * Make a http(s) put request.
    */
-  put(
-    path: string | URL,
-    body: NexisBody,
-    configOrCb?: http.RequestOptions | NexisCallback,
-    cb?: NexisCallback,
-  ): Promise<http.IncomingMessage>;
+  put: NexisMethodRequest;
 
   /**
    * Make a http(s) patch request.
    */
-  patch(
-    path: string | URL,
-    body: NexisBody,
-    configOrCb?: http.RequestOptions | NexisCallback,
-    cb?: NexisCallback,
-  ): Promise<http.IncomingMessage>;
+  patch: NexisMethodRequest;
 
   Agent: http.Agent;
   ClientRequest: http.ClientRequest;
@@ -300,7 +288,7 @@ export interface NexisFactory extends Nexis {
   /**
    * Creates another `NexisFactory` instance, `instanceConfig` is merged with the `defaultConfig` of this instance.
    */
-  create(instanceConfig: NexisConfig): NexisFactory;
+  create(instanceConfig?: NexisConfig): NexisFactory;
 }
 /**
  * A `NexisFactory` instance with default configuration.

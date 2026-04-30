@@ -17,6 +17,10 @@ describe("client creator", () => {
     assert.strictEqual(client instanceof Nexis, true);
   });
 
+  it("should return client without optional params", () => {
+    assert.strictEqual(createClient() instanceof Nexis, true);
+  });
+
   it("should return client with extended creation", () => {
     assert.strictEqual(typeof client.create, "function");
 

@@ -64,6 +64,7 @@ export type NexisMethodRequest = (
 export type NexisConfig = http.RequestOptions & {
   baseURL: string | URL;
   maxRedirects?: number;
+  loggers: { request: boolean; response: boolean; error: boolean };
 };
 
 /**
@@ -87,6 +88,7 @@ export type defaults = {
   baseURL: "http://localhost:80/";
   path: "/";
   method: { read: "get"; write: "post" };
+  unknown: "[Unknown]";
   config: () => {
     port: 80;
     timeout: 10000;

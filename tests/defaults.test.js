@@ -7,6 +7,7 @@ describe("default values", () => {
     assert.strictEqual(typeof defaults.baseURL, "string");
     assert.strictEqual(typeof defaults.path, "string");
     assert.strictEqual(typeof defaults.method, "object");
+    assert.strictEqual(typeof defaults.unknown, "string");
     assert.strictEqual(typeof defaults.config, "function");
     assert.strictEqual(typeof defaults.config(), "object");
     assert.strictEqual(typeof defaults.res, "function");

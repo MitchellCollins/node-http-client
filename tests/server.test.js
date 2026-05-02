@@ -500,6 +500,11 @@ describe("requests on test server", () => {
     });
 
     // Creates timeout error
-    client.get("/timeout", { timeout: 1 });
+    client.get("/timeout", { timeout: 1 }).catch(() => null);
+  });
+
+  it("get events error request async", { timeout }, async () => {
+    client.once("error", (error) => error);
+    await client.get("/timeout", { timeout: 1 }).catch(() => null);
   });
 });

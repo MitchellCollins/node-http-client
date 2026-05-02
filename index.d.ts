@@ -64,6 +64,7 @@ export type NexisMethodRequest = (
 export type NexisConfig = http.RequestOptions & {
   baseURL: string | URL;
   maxRedirects?: number;
+  loggers: { request: boolean; response: boolean; error: boolean };
 };
 
 /**

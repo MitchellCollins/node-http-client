@@ -87,6 +87,7 @@ export type defaults = {
   baseURL: "http://localhost:80/";
   path: "/";
   method: { read: "get"; write: "post" };
+  unknown: "[Unknown]";
   config: () => {
     port: 80;
     timeout: 10000;

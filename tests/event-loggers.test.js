@@ -161,7 +161,6 @@ describe("response event logger", () => {
     );
     assert.ok(loggedInfo.timestamp, "should label response timestamp");
 
-    const req = res.req;
     assert.strictEqual(
       loggedInfo.method,
       defaults.unknown,

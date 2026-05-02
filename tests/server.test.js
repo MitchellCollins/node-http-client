@@ -1,4 +1,4 @@
-const { describe, it, before, after } = require("node:test");
+const { describe, it, mock, before, after } = require("node:test");
 const assert = require("node:assert");
 const http = require("node:http");
 const Stream = require("node:stream");
@@ -506,5 +506,43 @@ describe("requests on test server", () => {
   it("get events error request async", { timeout }, async () => {
     client.once("error", (error) => error);
     await client.get("/timeout", { timeout: 1 }).catch(() => null);
+  });
+
+  it("request & response event loggers", async () => {
+    const infoMock = mock.method(console, "info", () => null);
+    
+    await client.get("/", { loggers: { request: true, response: true }});
+    
+    assert.strictEqual(infoMock.mock.callCount(), 2, "should make two console.info calls");
+    const [requestCall, responseCall] = infoMock.mock.calls;
+
+    assert.strictEqual(requestCall.arguments[0], "[Nexis Request]:", "should label Nexis Request");
+    const request = requestCall.arguments[1];
+    assert.strictEqual(request.method, "GET", "should log request method");
+    assert.strictEqual(request.url, "http:localhost:3000/", "should log request url");
+    assert.ok(request.timestamp, "should log request timestamp");
+
+    assert.strictEqual(responseCall.arguments[0], "[Nexis Response]:", "should label Nexis Response");
+    const response = responseCall.arguments[1];
+    assert.strictEqual(response.method, "GET", "should log response method");
+    assert.strictEqual(response.status, "200 OK", "should log response status");
+    assert.strictEqual(response.url, "http:localhost:3000/", "should log response url");
+    assert.ok(response.timestamp, "should log response timestamp");
+
+    infoMock.mock.restore();
+  });
+
+  it("error event logger", async () => {
+    const errorMock = mock.method(console, "error", () => null);
+    
+    client.get("/timeout", { timeout: 1, loggers: { error: true } });
+
+    await assert.strictEqual(errorMock.mock.callCount(), 1, "should make console.error call");
+
+    const errorCall = errorMock.mock.calls[0];
+    assert.strictEqual(errorCall.arguments[0], "[Nexis Error]:", "should label Nexis Error");
+    assert.ok(errorCall.arguments[1], "should log Nexis Error");
+
+    errorMock.mock.restore();
   });
 });

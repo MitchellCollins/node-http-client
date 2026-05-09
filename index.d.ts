@@ -138,16 +138,13 @@ export const decodeData: decodeData;
  * - `Bearer` scheme requires `token` param.
  * - `Digest` scheme loops through every provided param.
  */
-export type authFormatter = (
-  auth: {
-    scheme: "basic" | "bearer" | "digest";
-    token?: string;
-    username?: string;
-    password?: string;
-    [key: string]: string;
-  },
-  onReject: (err: TypeError) => void,
-) => string;
+export type authFormatter = (auth: {
+  scheme: "basic" | "bearer" | "digest";
+  token?: string;
+  username?: string;
+  password?: string;
+  [key: string]: string;
+}) => string;
 export const authFormatter: authFormatter;
 
 /**

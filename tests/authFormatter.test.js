@@ -34,26 +34,13 @@ describe("Auth Formatter", () => {
     assert.strictEqual(authFormatter(auth), auth);
   });
 
-  it("should reject invalid auth scheme", { timeout: 500 }, (t, done) => {
+  it("should reject invalid auth scheme", { timeout: 500 }, () => {
     const auth = { scheme: "invalid" };
-    new Promise((resolve, reject) => authFormatter(auth, reject)).catch(
-      (error) => {
-        try {
-          assert.strictEqual(
-            error instanceof NexisError,
-            true,
-            "should reject NexisError",
-          );
-          assert.strictEqual(
-            error.message.includes("Invalid Auth Scheme"),
-            true,
-            "error should include 'Invalid Auth Scheme'",
-          );
-          done();
-        } catch (err) {
-          done(err);
-        }
-      },
+    assert.throws(
+      () => authFormatter(auth),
+      (err) =>
+        err instanceof NexisError &&
+        err.message.includes("Invalid Auth Scheme"),
     );
   });
 });

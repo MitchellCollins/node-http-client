@@ -575,4 +575,18 @@ describe("requests on test server", () => {
 
     errorMock.mock.restore();
   });
+
+  it("should handle pipeline error", () => {
+    // Error in pipeline method caused by incorrect format of body
+    //    Because the incorrect content-type is provided
+    assert.rejects(
+      async () =>
+        await client.post(
+          "/",
+          { message: "Hello" },
+          { headers: { "content-type": "plain/text" } },
+        ),
+      (err) => err instanceof nexis.NexisError,
+    );
+  });
 });

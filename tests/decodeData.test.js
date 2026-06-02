@@ -20,4 +20,19 @@ describe("data decoder", () => {
       true,
     );
   });
+
+  it("should throw invalid input error", () => {
+    assert.throws(() => decodeData(JSON.stringify({ message: "success" }), 5), {
+      name: "Error",
+      code: "ERR_NEXIS_INVALID_INPUT_TYPE",
+    });
+    assert.throws(() => decodeData("Not_JSON", "application/json"), {
+      name: "Error",
+      code: "ERR_NEXIS_INVALID_CONTENT_TYPE",
+    });
+  });
+
+  it("shouldn't throw invalid input error on undefined or null", () => {
+    assert.doesNotThrow(() => decodeData(null, null));
+  });
 });

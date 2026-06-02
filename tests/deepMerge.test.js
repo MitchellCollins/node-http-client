@@ -38,4 +38,35 @@ describe("config merger", () => {
 
     assert.deepStrictEqual(deepMerge(config3, config4), expected2);
   });
+
+  it("should throw invalid input error", () => {
+    assert.throws(
+      () => deepMerge("Invalid", null),
+      {
+        name: "Error",
+        code: "ERR_NEXIS_INVALID_INPUT_TYPE",
+      },
+      "Throw invalid object1 input",
+    );
+    assert.throws(
+      () => deepMerge({}, "Invalid"),
+      {
+        name: "Error",
+        code: "ERR_NEXIS_INVALID_INPUT_TYPE",
+      },
+      "Throw invalid object2 input",
+    );
+  });
+
+  it("shouldn't throw invalid input error on undefined or null", () => {
+    assert.doesNotThrow(() => deepMerge(null, null));
+  });
+
+  it("should override object1 property if object2 is typeof object while object1 isn't", () => {
+    const output = deepMerge(
+      { message: "Hello" },
+      { message: { value: "Hello" } },
+    );
+    assert.deepStrictEqual(output, { message: { value: "Hello" } });
+  });
 });

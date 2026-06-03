@@ -54,7 +54,7 @@ export type NexisCallback = (
  */
 export type NexisMethodRequest = (
   path?: string | URL,
-  configOrCb?: http.RequestOptions | NexisCallback,
+  config?: http.RequestOptions | NexisCallback,
   cb?: NexisCallback,
 ) => Promise<http.IncomingMessage>;
 
@@ -228,7 +228,7 @@ export class Nexis extends EventEmitter<NexisEvents> {
   read(
     path?: string | URL,
     method?: "get" | "delete",
-    configOrCb?: http.RequestOptions | NexisCallback,
+    config?: http.RequestOptions | NexisCallback,
     cb?: NexisCallback,
   ): Promise<http.IncomingMessage>;
 
@@ -238,7 +238,7 @@ export class Nexis extends EventEmitter<NexisEvents> {
   write(
     path?: string | URL,
     method?: "post" | "put" | "patch",
-    configOrCb?: http.RequestOptions | NexisCallback,
+    config?: http.RequestOptions | NexisCallback,
     cb?: NexisCallback,
   ): Promise<http.IncomingMessage>;
 

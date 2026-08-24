@@ -60,50 +60,35 @@ describe("Nexis instance", () => {
   let otherConfig = { port: 3000 };
   const client = new Nexis({ baseURL, ...otherConfig });
 
-  it("should have getter & setter methods", () => {
-    assert.strictEqual(typeof client.getBaseURL, "function");
-    assert.strictEqual(typeof client.getConfig, "function");
-    assert.strictEqual(typeof client.setBaseURL, "function");
-    assert.strictEqual(typeof client.setConfig, "function");
-  });
-
   it("should throw invalid set input errors", () => {
-    assert.throws(() => client.setBaseURL(5), invalidInputType);
-    assert.throws(() => client.setConfig("Invalid"), invalidInputType);
+    assert.throws(() => client.baseURL = 5, invalidInputType);
+    assert.throws(() => client.config = "Invalid", invalidInputType);
   });
 
-  it("should have private attributes", () => {
-    assert.deepStrictEqual(client.getBaseURL(), new URL(baseURL));
-    assert.deepStrictEqual(client.getConfig(), {
+  it("should have hidden attributes", () => {
+    assert.deepStrictEqual(client.baseURL, new URL(baseURL));
+    assert.deepStrictEqual(client.config, {
       ...defaults.config(),
       ...otherConfig,
     });
 
     baseURL = new URL("https://localhost:3000/");
     otherConfig = { port: 4000 };
-    client.setBaseURL(baseURL);
-    client.setConfig(otherConfig);
+    client.baseURL = baseURL;
+    client.config = otherConfig;
 
-    assert.deepStrictEqual(client.getBaseURL(), baseURL);
-    assert.deepStrictEqual(client.getConfig(), {
+    assert.deepStrictEqual(client.baseURL, baseURL);
+    assert.deepStrictEqual(client.config, {
       ...defaults.config(),
       ...otherConfig,
     });
-  });
-
-  it("should set default value", () => {
-    client.setBaseURL();
-    client.setConfig();
-
-    assert.deepStrictEqual(client.getBaseURL(), new URL(defaults.baseURL));
-    assert.deepStrictEqual(client.getConfig(), defaults.config());
   });
 
   it("should validate request header", async () => {
     // Validate name during set
     assert.throws(
       () =>
-        client.setConfig({ headers: { "content type": "application/json" } }),
+        client.config = { headers: { "content type": "application/json" } },
       (err) =>
         err instanceof TypeError && err.code === "ERR_INVALID_HTTP_TOKEN",
       "should reject invalid header name on set",
@@ -111,7 +96,7 @@ describe("Nexis instance", () => {
 
     // Validate value during set
     assert.throws(
-      () => client.setConfig({ headers: { "content-type": undefined } }),
+      () => client.config = { headers: { "content-type": undefined } },
       (err) =>
         err instanceof TypeError &&
         err.code === "ERR_HTTP_INVALID_HEADER_VALUE",
@@ -224,7 +209,7 @@ describe("Nexis instance", () => {
   );
 
   it("should have inherited instance attributes", () => {
-    const protocol = protocols[client.getBaseURL().protocol];
+    const protocol = protocols[client.baseURL.protocol];
     assert.deepStrictEqual(client.Agent, protocol.Agent);
     assert.deepStrictEqual(client.globalAgent, protocol.globalAgent);
     assert.deepStrictEqual(client.request, protocol.request);

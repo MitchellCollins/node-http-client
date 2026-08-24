@@ -385,13 +385,13 @@ describe("requests on test server", () => {
     // Checks that the maxRedirect config isn't updated by reference
     //      When the request subtracts it and passes it as the config to the next request
     assert.strictEqual(
-      client.getConfig().maxRedirects,
+      client.config.maxRedirects,
       2,
       "maxRedirects should remain as set",
     );
 
     // Shouldn't redirect when set to 0
-    client.setConfig({ port, maxRedirects: 0 });
+    client.config = { port, maxRedirects: 0 };
     const nonRedirectResponse = await client.get("/resource");
     assert.strictEqual(
       nonRedirectResponse.statusCode,

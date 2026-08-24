@@ -25,6 +25,16 @@ export type NexisErrorCode =
   | "ERR_HTTP_REQUEST_TIMEOUT";
 
 /**
+ * `Nexis` request methods.
+ */
+export type NexisMethods = 
+  | "get"
+  | "post"
+  | "put"
+  | "patch"
+  | "delete";
+
+/**
  * A `Nexis` error with `request` and `response` objects attached.
  */
 export class NexisError extends Error {
@@ -217,10 +227,23 @@ export class Nexis extends EventEmitter<NexisEvents> {
    */
   constructor(config?: NexisConfig);
 
-  getBaseURL(): URL;
-  getConfig(): http.RequestOptions;
-  setBaseURL(newBaseURL?: string | URL): void;
-  setConfig(newConfig?: http.RequestOptions): void;
+  _baseURL: URL;
+  _config: http.RequestOptions;
+
+  get baseURL(): URL;
+  get config(): http.RequestOptions;
+  set baseURL(newBaseURL: string | URL);
+  set config(newConfig: http.RequestOptions);
+
+  _validatePathMethodCallback(path: any, method: any, callback: any): void;
+  _mergeConfigs(config: NexisConfig): NexisConfig;
+
+  _request(
+    path: string | URL,
+    method: NexisMethods,
+    config: NexisConfig | NexisCallback,
+    handlers: { cb?: NexisCallback, onRequest: (req: http.ClientRequest, config: NexisConfig) => Promise<void>}
+  ): Promise<http.IncomingMessage>;
 
   /**
    * Makes a read request which is either a `get` or `delete` method.

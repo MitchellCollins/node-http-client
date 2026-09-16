@@ -189,6 +189,11 @@ describe("requests on test server", () => {
     assert.strictEqual(response.data, "Hello, World!");
   });
 
+  it("read get request object param", async () => {
+    const response = await client.read({ path: "/", method: "get" });
+    assert.strictEqual(response.statusCode, 200);
+  });
+
   it("write post request", async () => {
     const data = { message: "Hello, World!" };
     const response = await client.write("/", "post", data);
@@ -198,6 +203,11 @@ describe("requests on test server", () => {
 
   it("write post request default params", async () => {
     const response = await client.write();
+    assert.strictEqual(response.statusCode, 200);
+  });
+
+  it("write post request object param", async () => {
+    const response = await client.write({ path: "/", method: "post" });
     assert.strictEqual(response.statusCode, 200);
   });
 
@@ -220,8 +230,18 @@ describe("requests on test server", () => {
     assert.strictEqual(response.data, "Hello, World!");
   });
 
+  it("basic get request object param", async () => {
+    const response = await client.get({ path: "/" });
+    assert.strictEqual(response.statusCode, 200);
+  });
+
   it("basic post request default params", async () => {
     const response = await client.post();
+    assert.strictEqual(response.statusCode, 200);
+  });
+
+  it("basic post request object params", async () => {
+    const response = await client.post({ path: "/" });
     assert.strictEqual(response.statusCode, 200);
   });
 

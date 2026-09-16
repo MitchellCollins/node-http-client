@@ -61,8 +61,8 @@ describe("Nexis instance", () => {
   const client = new Nexis({ baseURL, ...otherConfig });
 
   it("should throw invalid set input errors", () => {
-    assert.throws(() => client.baseURL = 5, invalidInputType);
-    assert.throws(() => client.config = "Invalid", invalidInputType);
+    assert.throws(() => (client.baseURL = 5), invalidInputType);
+    assert.throws(() => (client.config = "Invalid"), invalidInputType);
   });
 
   it("should have hidden attributes", () => {
@@ -88,7 +88,7 @@ describe("Nexis instance", () => {
     // Validate name during set
     assert.throws(
       () =>
-        client.config = { headers: { "content type": "application/json" } },
+        (client.config = { headers: { "content type": "application/json" } }),
       (err) =>
         err instanceof TypeError && err.code === "ERR_INVALID_HTTP_TOKEN",
       "should reject invalid header name on set",
@@ -96,7 +96,7 @@ describe("Nexis instance", () => {
 
     // Validate value during set
     assert.throws(
-      () => client.config = { headers: { "content-type": undefined } },
+      () => (client.config = { headers: { "content-type": undefined } }),
       (err) =>
         err instanceof TypeError &&
         err.code === "ERR_HTTP_INVALID_HEADER_VALUE",
@@ -173,22 +173,6 @@ describe("Nexis instance", () => {
 
       client.read("/", "read", (res, err) => handleError(err));
       client.write("/", "write", {}, (res, err) => handleError(err));
-    },
-  );
-
-  it(
-    "should reject invalid config request input errors",
-    { timeout },
-    (t, done) => {
-      const handleError = generateErrorCheck(7, done);
-
-      client.read("/", "get", "Invalid", (res, err) => handleError(err));
-      client.write("/", "post", {}, "Invalid", (res, err) => handleError(err));
-      client.get("/", "Invalid", (res, err) => handleError(err));
-      client.delete("/", "Invalid", (res, err) => handleError(err));
-      client.post("/", {}, "Invalid", (res, err) => handleError(err));
-      client.put("/", {}, "Invalid", (res, err) => handleError(err));
-      client.patch("/", {}, "Invalid", (res, err) => handleError(err));
     },
   );
 

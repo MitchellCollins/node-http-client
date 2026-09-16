@@ -27,12 +27,7 @@ export type NexisErrorCode =
 /**
  * `Nexis` request methods.
  */
-export type NexisMethods = 
-  | "get"
-  | "post"
-  | "put"
-  | "patch"
-  | "delete";
+export type NexisMethods = "get" | "post" | "put" | "patch" | "delete";
 
 /**
  * A `Nexis` error with `request` and `response` objects attached.
@@ -60,10 +55,19 @@ export type NexisCallback = (
 ) => void;
 
 /**
+ * A `Nexis` request options object.
+ */
+export type NexisOptions<T extends NexisMethods> = {
+  path?: string | URL;
+  method?: T;
+  cb?: NexisCallback;
+} & http.RequestOptions;
+
+/**
  * A `Nexis` method request function.
  */
 export type NexisMethodRequest = (
-  path?: string | URL,
+  pathOrOptions?: string | URL | NexisOptions<NexisMethods>,
   config?: http.RequestOptions | NexisCallback,
   cb?: NexisCallback,
 ) => Promise<http.IncomingMessage>;
@@ -238,18 +242,24 @@ export class Nexis extends EventEmitter<NexisEvents> {
   _validatePathMethodCallback(path: any, method: any, callback: any): void;
   _mergeConfigs(config: NexisConfig): NexisConfig;
 
-  _request(
-    path: string | URL,
-    method: NexisMethods,
-    config: NexisConfig | NexisCallback,
-    handlers: { cb?: NexisCallback, onRequest: (req: http.ClientRequest, config: NexisConfig) => Promise<void>}
-  ): Promise<http.IncomingMessage>;
+  _request(options: {
+    path: string | URL;
+    method: NexisMethods;
+    config: NexisConfig | NexisCallback;
+    handlers: {
+      cb?: NexisCallback;
+      onRequest: (
+        req: http.ClientRequest,
+        config: NexisConfig,
+      ) => Promise<void>;
+    };
+  }): Promise<http.IncomingMessage>;
 
   /**
    * Makes a read request which is either a `get` or `delete` method.
    */
   read(
-    path?: string | URL,
+    pathOrOptions?: string | URL | NexisOptions<"get" | "delete">,
     method?: "get" | "delete",
     config?: http.RequestOptions | NexisCallback,
     cb?: NexisCallback,
@@ -259,7 +269,7 @@ export class Nexis extends EventEmitter<NexisEvents> {
    * Makes a write request which is either a `post`, `put` or `patch` method.
    */
   write(
-    path?: string | URL,
+    pathOrOptions?: string | URL | NexisOptions<"post" | "put" | "patch">,
     method?: "post" | "put" | "patch",
     config?: http.RequestOptions | NexisCallback,
     cb?: NexisCallback,
